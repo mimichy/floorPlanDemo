@@ -1,66 +1,61 @@
-import React, {Component} from 'react';
-import {ImageBackground, View, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import {ImageBackground, View, Pressable, Image, Text} from 'react-native';
 
-class ImageMapper extends Component {
-  buildStyle(item, index) {
-    const {x1, y1, x2, y2, width, height, shape, fill, prefill, id, radius} =
-      item;
-    const {selectedAreaId, multiselect} = this.props;
-    let areaId = selectedAreaId;
-    if (
-      multiselect &&
-      (selectedAreaId === null || selectedAreaId === undefined)
-    ) {
-      areaId = [];
-    }
-    const style = {
-      width: 0,
-      height: 0,
-      left: x1,
-      top: y1,
-    };
-    if (prefill !== null && prefill !== undefined) {
-      if ((multiselect && !areaId.includes(id)) || id !== areaId) {
-        style.backgroundColor = prefill;
-      }
-    }
-    if (fill !== null && fill !== undefined) {
-      if ((multiselect && areaId.includes(id)) || id === areaId) {
-        style.backgroundColor = fill;
-      }
-    }
-    if (shape === 'rectangle') {
-      style.width = width === null || width === undefined ? x2 - x1 : width;
-      style.height = height === null || height === undefined ? y2 - y1 : height;
-    }
-    if (shape === 'circle') {
-      style.width = radius;
-      style.height = radius;
-      style.borderRadius = radius / 2;
-    }
-    return style;
-  }
-
-  render() {
-    const {imgSource, imgMap, imgHeight, imgWidth, containerStyle} = this.props;
-    return (
-      <View style={[{flex: 1}, containerStyle]}>
-        <ImageBackground
-          resizeMode="contain"
-          style={{height: imgHeight, width: imgWidth}}
-          source={imgSource}>
-          {imgMap.map((item, index) => (
-            <TouchableOpacity
-              key={item.id}
-              onPress={event => this.props.onPress(item, index, event)}
-              style={[{position: 'absolute'}, this.buildStyle(item, index)]}
-            />
-          ))}
-        </ImageBackground>
-      </View>
-    );
-  }
-}
+const ImageMapper = ({
+  imgSource,
+  imgMap,
+  imgHeight,
+  imgWidth,
+  containerStyle,
+}) => {
+  const [isShowTooltip, setIsShowTooltip] = useState(false);
+  return (
+    <View style={[{flex: 1}, containerStyle]}>
+      <ImageBackground
+        resizeMode="contain"
+        style={{
+          height: imgHeight,
+          width: imgWidth,
+          display: 'flex',
+        }}
+        source={imgSource}>
+        {imgMap.map((item, index) => (
+          <Pressable
+            onLongPress={() => {
+              setIsShowTooltip(true);
+            }}
+            onPressOut={() => {
+              setIsShowTooltip(false);
+            }}>
+            {isShowTooltip && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: item.y1 - 30,
+                  left: item.x1,
+                  backgroundColor: '#FFFFFF',
+                  padding: 3,
+                  borderWidth: 1,
+                  borderRadius: 3,
+                }}>
+                <Text>{item.label}</Text>
+              </View>
+            )}
+            <Image
+              style={{
+                position: 'absolute',
+                top: item.y1,
+                left: item.x1,
+                height: 22,
+                width: 22,
+              }}
+              source={item.icon}></Image>
+          </Pressable>
+        ))}
+      </ImageBackground>
+    </View>
+  );
+};
 
 ImageMapper.defaultProps = {
   multiselect: false,
