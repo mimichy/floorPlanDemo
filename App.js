@@ -18,6 +18,7 @@ import {
 
 // import ImageMapper from 'react-native-image-mapper';
 import ImageMapper from './components/ImageMapper';
+import Download from './Download';
 
 const App = () => {
   //State for the selected area
@@ -33,7 +34,7 @@ const App = () => {
           textAlign: 'center',
           marginTop: 40,
         }}>
-        Image Mapper Example in React Native
+        {/* Image Mapper Example in React Native */}
       </Text>
       <ScrollView
         maximumZoomScale={5}
@@ -41,6 +42,7 @@ const App = () => {
         minimumZoomScale={1}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}>
+        <Download />
         <ImageMapper
           imgHeight={imgHeight}
           imgWidth={imgWidth}
